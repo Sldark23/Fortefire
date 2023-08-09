@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Raiva Tube</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			margin: 0;
+			padding: 0;
+		}
+		header {
+			background-color: #ff0000;
+			color: #ffffff;
+			text-align: center;
+			padding: 10px;
+		}
+		.container {
+			max-width: 1200px;
+			margin: 0 auto;
+			padding: 20px;
+		}
+		.video-container {
+			position: relative;
+			padding-bottom: 56.25%;
+			height: 0;
+			overflow: hidden;
+		}
+		.video-container iframe {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+		}
+	</style>
+</head>
+<body>
+	<header>
+		<h1>Raiva Tube</h1>
+		<input type="text" id="searchInput" placeholder="Pesquisar vídeo...">
+		<button onclick="searchVideo()">Pesquisar</button>
+		<button onclick="showRandomVideo()">For You</button>
+	</header>
+	<div class="container">
+		<div class="video-container">
+			<iframe id="videoFrame" width="560" height="315" src="" frameborder="0" allowfullscreen></iframe>
+		</div>
+		<div id="videoName"></div>
+	</div>
+	<script>
+		const videoFrame = document.getElementById("videoFrame");
+		const searchInput = document.getElementById("searchInput");
+		const videoNameDiv = document.getElementById("videoName");
+		const videosJson = "videos.json"; // Nome do arquivo JSON
+
+		function searchVideo() {
+			const searchTerm = searchInput.value.toLowerCase();
+			fetch(videosJson)
+				.then(response => response.json())
+				.then(data => {
+					const matchingVideos = data.filter(video => video.title.toLowerCase().includes(searchTerm));
+					if (matchingVideos.length > 0) {
+						const randomIndex = Math.floor(Math.random() * matchingVideos.length);
+						playVideo(matchingVideos[randomIndex]);
+					} else {
+						alert("Nenhum vídeo encontrado com esse termo.");
+					}
+				})
+				.catch(error => {
+					console.error("Erro ao carregar o arquivo JSON:", error);
+				});
+		}
+
+		function showRandomVideo() {
+			fetch(videosJson)
+				.then(response => response.json())
+				.then(data => {
+					const randomIndex = Math.floor(Math.random() * data.length);
+					playVideo(data[randomIndex]);
+				})
+				.catch(error => {
+					console.error("Erro ao carregar o arquivo JSON:", error);
+				});
+		}
+
+		function playVideo(video) {
+			videoFrame.src = video.src;
+			videoNameDiv.textContent = "Vídeo: " + video.title;
+		}
+	</script>
+</body>
+</html>
