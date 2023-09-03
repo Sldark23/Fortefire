@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Upload de Vídeo</title>
+  <meta charset="utf-8">
+</head>
+<body>
+  <h1>Upload de Vídeo</h1>
+  
+  <label for="videoTitle">Título do Vídeo:</label>
+  <input type="text" id="videoTitle"><br><br>
+  
+  <label for="videoLink">Link do Vídeo:</label>
+  <input type="text" id="videoLink"><br><br>
+  
+  <button onclick="uploadVideo()">Enviar Vídeo</button>
+  
+  <script>
+    function uploadVideo() {
+      const videoTitle = document.getElementById("videoTitle").value;
+      const videoLink = document.getElementById("videoLink").value;
+
+      if (videoTitle && videoLink) {
+        const newVideo = {
+          title: videoTitle,
+          src: videoLink
+        };
+
+        fetch('videos.json')
+          .then(response => response.json())
+          .then(data => {
+            data.push(newVideo);
+
+            fetch('videos.json', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(updatedData => {
+              console.log('Vídeo enviado e salvo:', newVideo);
+            })
+            .catch(error => {
+              console.error('Erro ao salvar o vídeo:', error);
+            });
+          })
+          .catch(error => {
+            console.error('Erro ao carregar o arquivo JSON:', error);
+          });
+      } else {
+        alert("Preencha o título e o link do vídeo.");
+      }
+    }
+  </script>
+</body>
+</html>
